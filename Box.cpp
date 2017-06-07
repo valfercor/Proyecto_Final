@@ -4,7 +4,13 @@
 
 Box::Box()
 {
-
+	left =  (2 * BoxSize + 50) / 2.0;
+	bottom=3.08 * BoxSize - 19;
+	PrimerMovimiento = true;
+	BandNumber = 0;
+	IsOrange = true;
+	type = 0;
+	
 }
 
 
@@ -12,44 +18,77 @@ Box::~Box()
 {
 }
 
-void Box::DrawBox(CG::Gdi& gdi, double left, double bottom, int type, bool orange)
+void Box::DrawBox(CG::Gdi& gdi, float delta, bool esDerecha)
 {
+	//Update position
+	if (PrimerMovimiento == true)
+	{
 
-	CG::Brush OrangeBrush(RGB(230, 10, 200));
-	CG::Pen OrangePen(PS_SOLID, 2, RGB(200, 10, 200));
-	CG::Brush RedBrush(RGB(230, 10, 10));
-	CG::Pen RedPen(PS_SOLID, 2, RGB(200, 10, 10));
+		if (BandNumber == 0)
+		{
+			left = (int)(left + BoxSpeed*delta + 0.5);
+		}
+		if (BandNumber == 1)
+		{
+			bottom = (int)(bottom + BoxSpeed*delta + 0.5);
+		}
 
-	if (orange == true)
+	}
+
+	if(PrimerMovimiento==false && BandNumber==1)
+	{
+		if (esDerecha == true)
+			left = (int)(left + BoxSpeed*delta + 0.5);
+		else
+			left = (int)(left - (BoxSpeed*delta + 0.5));
+	}
+	
+	if (Caida == true)
+	{
+		bottom = (int)(bottom + BoxSpeed*delta + 0.5);
+	}
+		
+
+
+
+
+
+	//____Draw
+	CG::Brush OrangeBrush(RGB(255, 117, 020));
+	CG::Brush RedBrush(RGB(179, 040, 033));
+	gdi.SelectNullPen();
+
+
+	if (IsOrange == true)
 	{
 		gdi.Select(OrangeBrush);
-		gdi.Select(OrangePen);
 	}
 	else
 	{
 		gdi.Select(RedBrush);
-		gdi.Select(RedPen);
+
 	}
 	RECT box;
 	box.bottom = bottom;
 	box.left = left;
 
-	if (type == 1)//Square
+	if (type == 0)//Square
 	{
-		box.top = bottom + BoxSize;
-		box.top = left + BoxSize;
+		box.top = bottom - BoxSize;
+		box.right = left + BoxSize;
 
 	}
-	else if (type == 2)//horizontal
+	else if (type == 1)//horizontal
 	{
-		box.top = bottom + (BoxSize / 2);
-		box.top = left + BoxSize;
+		box.top = bottom - (BoxSize / 2);
+		box.right = left + BoxSize;
 	}
 	else
 	{
-		box.top = bottom + BoxSize;
-		box.top = left + (BoxSize / 2);
+		box.top = bottom - BoxSize;
+		box.right = left + (BoxSize / 2);
 	}
 
 	gdi.Rectangle(box);
 }
+
