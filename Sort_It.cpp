@@ -5,6 +5,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR cmdLine, int cmdSho
 	Sort_It app;
 	app.CreateMainWindow(L"Sort_It", cmdShow, IDI_Sort_It, NULL, (HBRUSH)::GetStockObject(NULL_BRUSH), hInstance);
 	return app.MessageLoop(IDC_Sort_It);
+
 }
 
 void Sort_It::Window_Open(Win::Event& e)
@@ -12,6 +13,7 @@ void Sort_It::Window_Open(Win::Event& e)
 	//________Background
 	BitmapBG.CreateFromResource(this->hInstance, IDB_BACKGROUND);
 	
+	FirstTime = true;
 	this->Show(SW_SHOWMAXIMIZED);//para hacer grande la pantalla
 }
 
@@ -20,6 +22,8 @@ bool Sort_It::RenderScene(CG::Gdi& gdi)
 	static DWORD prevTime = timeGetTime();
 	const DWORD currentTime = timeGetTime();
 	const float delta = (currentTime - prevTime) / 1000.0f;
+	static double tiempo = 0;
+	tiempo += delta;
 
 	float levelHeight = (height - (BoxSize + 2 * DEFAULTV)) / 4;
 	float typeWidth = width / 3;
@@ -36,13 +40,47 @@ bool Sort_It::RenderScene(CG::Gdi& gdi)
 	//____________________________________________ Paint Bands
 	DefineBandPosition(typeWidth, levelHeight, SpaceVertical, SpaceHorizontal);
 	PaintBands(gdi, delta, typeWidth, levelHeight, SpaceVertical, SpaceHorizontal);
+	double BottomLimit = height - (BoxSize / 2);
 
+	//gdi.Line(0, height - (BoxSize/2), width, height - (BoxSize/2));
 
-	MoveBox(gdi,delta,0);
+	
+	if (FirstTime == true)
+	{
+		MoveBox(gdi, delta, 0);
+		if (Box[0].bottom == BottomLimit)
+			FirstTime = false;
+	}
+	else
+	{
+		MoveBox(gdi, delta, 0);
+		MoveBox(gdi, delta, 1);
+	}
+	//MoveBox(gdi, delta, 0);
+	//if (Box[0].bottom >= BottomLimit)
+	//	ResetBox(0);
 
+	//MoveBox(gdi, delta, 1);
+	//if (Box[1].bottom >= BottomLimit)
+	//	ResetBox(1);
+
+		
+
+	
+	
 
 	prevTime = timeGetTime();
 	return true; // return false to stop
+}
+void Sort_It::ResetBox(int NumberOfBoxes)
+{
+	Box[NumberOfBoxes].left = (2 * BoxSize + 50) / 2.0;
+	Box[NumberOfBoxes].bottom = 3.08 * BoxSize - 19;
+	Box[NumberOfBoxes].PrimerMovimiento = true;
+	Box[NumberOfBoxes].BandNumber = 0;
+	Box[NumberOfBoxes].IsOrange = rand() % 2;
+	Box[NumberOfBoxes].type = rand() % 3;
+	Box[NumberOfBoxes].Caida = false;
 }
 
 void Sort_It::MoveBox(CG::Gdi gdi,float delta,int NumberOfBoxes)
@@ -118,6 +156,7 @@ void Sort_It::MoveBox(CG::Gdi gdi,float delta,int NumberOfBoxes)
 	//Collision ultimo nivel
 	if (Box[NumberOfBoxes].bottom >= Band[3].gear1y - SPACER  && (Box[NumberOfBoxes].BandNumber >=3))
 	{
+		NumeroCajas++;
 		Box[NumberOfBoxes].Caida = false;
 		if (Box[NumberOfBoxes].BandNumber == 3)
 		{

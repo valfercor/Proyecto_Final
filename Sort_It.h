@@ -14,6 +14,8 @@ class Sort_It : public Game::Window
 public:
 	Sort_It()
 	{
+		srand(time(NULL));
+		NumeroCajas = 1;
 	}
 	~Sort_It()
 	{
@@ -24,12 +26,15 @@ public:
 	Bandx Band[6];
 	Box Box[20];
 
-
+	int NumeroCajas;
+	
+	bool FirstTime;
 
 	void PaintBands(CG::Gdi gdi, float delta, float typewidth, float levelHeight, float SpaceVertical, float SpaceHorizontal);
 	void ChangeDirection(int x, int y);
 	void DefineBandPosition(float typeWidth, float levelHeight, float SpaceVertical, float SpaceHorizontal);
 	void MoveBox(CG::Gdi gdi,float delta,int NumberOfBoxes);
+	void ResetBox(int NumberOfBoxes);
 
 	//int BandNumber;
 
