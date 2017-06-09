@@ -29,7 +29,7 @@ public:
 	void PaintBands(CG::Gdi gdi, float delta, float typewidth, float levelHeight, float SpaceVertical, float SpaceHorizontal);
 	void ChangeDirection(int x, int y);
 	void DefineBandPosition(float typeWidth, float levelHeight, float SpaceVertical, float SpaceHorizontal);
-	void MoveBox(double x, double y, float delta, CG::Gdi gdi);
+	void MoveBox(CG::Gdi gdi,float delta,int NumberOfBoxes);
 
 	//int BandNumber;
 
@@ -45,21 +45,20 @@ public:
 	const wchar_t * GetClassName() { return L"Sort_It"; }
 protected:
 	//______ Wintempla GUI manager section begin: DO NOT EDIT AFTER THIS LINE
-	void InitializeGui()
-	{
-		this->Text = L"Sort_It";
-	}
-	//void Window_KeyDown(Win::Event& e);
-	//void Window_KeyUp(Win::Event& e);
-	void Window_LButtonDown(Win::Event& e);
-	//void Window_LButtonUp(Win::Event& e);
-	//void Window_MouseMove(Win::Event& e);
-	//void Window_Size(Win::Event& e);
-	void Window_Open(Win::Event& e);
+protected:
 	void GetWindowInformation(CREATESTRUCT& createStruct)
 	{
 		createStruct.style = WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW;
 	}
+	//_________________________________________________
+	void InitializeGui()
+	{
+		this->Text = L"Sort_It";
+	}
+	//_________________________________________________
+	void Window_LButtonDown(Win::Event& e);
+	void Window_Open(Win::Event& e);
+	//_________________________________________________
 	bool EventHandler(Win::Event& e)
 	{
 		return false;

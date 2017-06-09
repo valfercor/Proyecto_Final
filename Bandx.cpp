@@ -4,7 +4,7 @@
 
 Bandx::Bandx()
 {
-	esDerecha = true;
+	esDerecha = false;
 }
 
 

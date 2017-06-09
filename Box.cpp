@@ -10,6 +10,7 @@ Box::Box()
 	BandNumber = 0;
 	IsOrange = true;
 	type = 0;
+	Caida = false;
 	
 }
 
@@ -42,15 +43,23 @@ void Box::DrawBox(CG::Gdi& gdi, float delta, bool esDerecha)
 		else
 			left = (int)(left - (BoxSpeed*delta + 0.5));
 	}
-	
+
 	if (Caida == true)
 	{
 		bottom = (int)(bottom + BoxSpeed*delta + 0.5);
 	}
-		
 
 
 
+	if (Caida == false && BandNumber >= 2)
+	{
+		if (esDerecha == true)
+			left = (int)(left + BoxSpeed*delta + 0.5);
+		else
+			left = (int)(left - (BoxSpeed*delta + 0.5));
+	}
+
+	
 
 
 	//____Draw

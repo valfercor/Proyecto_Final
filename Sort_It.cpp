@@ -38,78 +38,126 @@ bool Sort_It::RenderScene(CG::Gdi& gdi)
 	PaintBands(gdi, delta, typeWidth, levelHeight, SpaceVertical, SpaceHorizontal);
 
 
-	///	double x, y;
-	int  SPACE = GearDiameter + BandGrosor + 2;
-	int  SPACEboxR = SPACE + BoxSize;
-
-	//____________________BOXES
-	
-	//Band 0
-	if (Box[0].PrimerMovimiento == true)
-	{
-		if (Box[0].left >= Band[0].gear2x + SPACE && Box[0].left <= Band[0].gear2x + SPACEboxR && Box[0].BandNumber == 0)
-		{
-			Box[0].BandNumber++;
-		}
-		Box[0].DrawBox(gdi, delta, false);
-
-	}
-
-	if (Box[0].bottom >= Band[1].gear1y - SPACE  && Box[0].BandNumber == 1)
-	{
-		Box[0].PrimerMovimiento = false;
-		Box[0].DrawBox(gdi, delta, Band[1].esDerecha);
-		//______Limite Izquierdo_Banda 1
-		if (Box[0].left >= Band[1].gear1x - SPACEboxR && Box[0].left <= Band[1].gear1x - SPACE && Box[0].BandNumber == 1)
-			Box[0].BandNumber++;
-		//______Limite Derecho_Banda 1
-		//if (Box[0].left >= Band[1].gear2x + SPACE && Box[0].left <= Band[1].gear2x + SPACE + BoxSize&& Box[0].BandNumber == 1)
-	}
-
-	//______Limite Izquierdo_Banda 1
-	if (Box[0].left >= Band[1].gear1x - SPACEboxR && Box[0].left <= Band[1].gear1x - SPACE && Box[0].BandNumber == 1 && Box[0].BandNumber == 2)
-	{
-		Box[0].Caida = true;
-	}
-		
-		
-
-		//this->Text = L"Derecha?: ";
-		//this->Text += Sys::Convert::ToString(Band[1].esDerecha);
-		////this->Text += L" ,Primer Movimiento?: ";
-		////this->Text += Sys::Convert::ToString(Box[0].PrimerMovimiento);
-		this->Text = Sys::Convert::ToString(Box[0].BandNumber);
-	
-
-
-	
-	//MoveBox(box.left, box.bottom, delta,gdi);
-
-	
+	MoveBox(gdi,delta,0);
 
 
 	prevTime = timeGetTime();
 	return true; // return false to stop
 }
 
-void Sort_It::MoveBox(double x,double y,float delta,CG::Gdi gdi)//left,bottom
+void Sort_It::MoveBox(CG::Gdi gdi,float delta,int NumberOfBoxes)
 {
-	//Box=i,j=band
-	double SPACE = GearDiameter + BandGrosor;
-	for (x = Band[0].gear1x; x <= Band[0].gear2x + SPACE; x += GearSpeed/2)
+	int  SPACER = (GearDiameter/2 )+ 2*BandGrosor ;
+	int  SPACEL = (GearDiameter / 2) - 2*BandGrosor ;
+	int  SPACEBoxR = SPACER + BoxSize;
+	int  SPACEBoxL = SPACEL - BoxSize;
+	//____________________BOXES
+	
+	//Band 0
+	if (Box[NumberOfBoxes].PrimerMovimiento == true)
 	{
-		Box[0].left = x;
-		Box[0].bottom = y;
-		//Box[0].DrawBox(gdi, 2, false,delta);
+		if (Box[NumberOfBoxes].left >= Band[0].gear2x + SPACER && Box[NumberOfBoxes].left <= Band[0].gear2x + SPACEBoxR && Box[NumberOfBoxes].BandNumber == 0)
+		{
+			Box[NumberOfBoxes].BandNumber++;
+		}
+		Box[NumberOfBoxes].DrawBox(gdi, delta, false);
 
 	}
-		//gdi.Rectangle(box);
-	/*for (y = Band[0].gear1y; y <= Band[1].gear1y - SPACE; x += GearSpeed*delta)
-		gdi.Rectangle(box);*/
 
+	//Collision Banda 1
+	if (Box[NumberOfBoxes].bottom >= Band[1].gear1y - SPACER  && Box[NumberOfBoxes].BandNumber == 1)
+	{
+		Box[NumberOfBoxes].PrimerMovimiento = false;
+		Box[NumberOfBoxes].DrawBox(gdi, delta, Band[1].esDerecha);
+		//______Limite Izquierdo
+		if (Box[NumberOfBoxes].left >= Band[1].gear1x-(GearDiameter/2)-2*BandGrosor-BoxSize-20 && Box[0].left <= Band[1].gear1x - (GearDiameter / 2) - 2 * BandGrosor-BoxSize)
+		{
+			Box[NumberOfBoxes].BandNumber++;
+			Box[NumberOfBoxes].Caida = true;
+		}
+		
+		//______Limite Derecho
+		else if (Box[NumberOfBoxes].left >= Band[1].gear2x + SPACER && Box[NumberOfBoxes].left <= Band[1].gear2x + SPACEBoxR)
+		{
+			Box[NumberOfBoxes].BandNumber=5;
+			Box[NumberOfBoxes].Caida = true;
+		}
+	}
+	if(Box[NumberOfBoxes].BandNumber == 1)
+		Box[NumberOfBoxes].DrawBox(gdi, delta, Band[1].esDerecha);
+		
+	//Collision Banda 2
+	if (Box[NumberOfBoxes].bottom >= Band[2].gear1y - SPACER  && Box[NumberOfBoxes].BandNumber == 2)
+	{
+		Box[NumberOfBoxes].Caida = false;
+		Box[NumberOfBoxes].DrawBox(gdi, delta, Band[2].esDerecha);
+		//______Limite Izquierdo
+		if (Box[NumberOfBoxes].left >= Band[2].gear1x - (GearDiameter / 2) - 2 * BandGrosor - BoxSize - 20 && Box[NumberOfBoxes].left <= Band[2].gear1x - (GearDiameter / 2) - 2 * BandGrosor - BoxSize)
+		{
+			Box[NumberOfBoxes].BandNumber++;
+			Box[NumberOfBoxes].Caida = true;
+		}
 
+		//______Limite Derecho
+		else if (Box[NumberOfBoxes].left >= Band[2].gear2x + SPACER && Box[0].left <= Band[2].gear2x + SPACEBoxR)
+		{
+			Box[NumberOfBoxes].BandNumber += 2;
+			Box[NumberOfBoxes].Caida = true;
+		}	
+	}
 
+	if(Box[NumberOfBoxes].BandNumber == 2)
+		Box[NumberOfBoxes].DrawBox(gdi, delta, Band[2].esDerecha);
+	if ((Box[NumberOfBoxes].BandNumber == 3 || Box[NumberOfBoxes].BandNumber == 4) && Box[NumberOfBoxes].Caida == true && Box[NumberOfBoxes].bottom <= Band[3].gear1y)
+		Box[NumberOfBoxes].DrawBox(gdi, delta, Band[Box[NumberOfBoxes].BandNumber].esDerecha);
+
+	//Caida derecha a Banda 5
+	if (Box[NumberOfBoxes].BandNumber == 5 && Box[NumberOfBoxes].Caida == true)
+		Box[NumberOfBoxes].DrawBox(gdi, delta, Band[1].esDerecha);
+
+	//Collision ultimo nivel
+	if (Box[NumberOfBoxes].bottom >= Band[3].gear1y - SPACER  && (Box[NumberOfBoxes].BandNumber >=3))
+	{
+		Box[NumberOfBoxes].Caida = false;
+		if (Box[NumberOfBoxes].BandNumber == 3)
+		{
+			//______Limite Izquierdo
+				if (Box[NumberOfBoxes].left >= 0 && Box[NumberOfBoxes].left <= Band[3].gear1x - (GearDiameter / 2) - 2 * BandGrosor - BoxSize)
+					Box[NumberOfBoxes].Caida = true;
+			//______Limite Derecho
+				if (Box[NumberOfBoxes].left >= Band[3].gear2x + SPACER && Box[NumberOfBoxes].left <= Band[3].gear2x + SPACEBoxR)
+					Box[NumberOfBoxes].Caida = true;
+			Box[NumberOfBoxes].DrawBox(gdi, delta, Band[3].esDerecha);
+		}
+
+		if (Box[NumberOfBoxes].BandNumber == 4)
+		{
+			//______Limite Izquierdo
+			if (Box[NumberOfBoxes].left >= Band[3].gear2x + SPACER && Box[NumberOfBoxes].left <= Band[4].gear1x - (GearDiameter / 2) - 2 * BandGrosor - BoxSize)
+				Box[NumberOfBoxes].Caida = true;
+			//______Limite Derecho
+			if (Box[NumberOfBoxes].left >= Band[4].gear2x + SPACER && Box[NumberOfBoxes].left <= Band[4].gear2x + SPACEBoxR)
+				Box[NumberOfBoxes].Caida = true;
+			Box[NumberOfBoxes].DrawBox(gdi, delta, Band[4].esDerecha);
+		}
+
+		if (Box[NumberOfBoxes].BandNumber == 5)
+		{
+			//______Limite Izquierdo
+			if (Box[NumberOfBoxes].left >= Band[4].gear2x + SPACER && Box[NumberOfBoxes].left <= Band[5].gear1x - (GearDiameter / 2) - 2 * BandGrosor - BoxSize)
+				Box[NumberOfBoxes].Caida = true;
+			//______Limite Derecho
+			if (Box[NumberOfBoxes].left >= Band[5].gear2x + SPACER && Box[NumberOfBoxes].left <= width)
+				Box[NumberOfBoxes].Caida = true;
+
+			Box[NumberOfBoxes].DrawBox(gdi, delta, Band[5].esDerecha);
+		}
+		
+	}
+	
 }
+
+
 
 void Sort_It::Window_LButtonDown(Win::Event& e)
 {
@@ -220,48 +268,3 @@ void Sort_It::DefineBandPosition(float typeWidth, float levelHeight, float Space
 	Band[5].gear2x = width - SpaceHorizontal;
 	
 }
-
-
-//____________________Define Gears Position
-////_________Band 0 _______Level 0
-////Gear [0]
-//GearsX[0] = (2 * BoxSize + 15) / 2.0;
-//GearsY[0] = 2.45 * BoxSize;
-////Gear [1]
-//GearsX[1] = width / 2;
-//GearsY[1] = GearsY[0];
-////_________Band 1 _______Level 1
-////Gear [2]
-//GearsX[2] = typeWidth + SpaceHorizontal;
-//GearsY[2] = 2 * levelHeight - SpaceVertical;
-////Gear [3]
-//GearsX[3] = 2.5*typeWidth - SpaceHorizontal;
-//GearsY[3] = GearsY[2];
-////________Band 2 _______Level 2
-////Gear [4]
-//GearsX[4] = 0.5*typeWidth + SpaceHorizontal;
-//GearsY[4] = 3 * levelHeight - SpaceVertical;
-////Gear [5]
-//GearsX[5] = 1.5*typeWidth - SpaceHorizontal;
-//GearsY[5] = GearsY[4];
-////_________Band 3 _______Level 3
-////Gear [6]
-//GearsX[6] = SpaceHorizontal;
-//GearsY[6] = 4 * levelHeight - SpaceVertical;
-////Gear [7]
-//GearsX[7] = typeWidth - SpaceHorizontal;
-//GearsY[7] = GearsY[6];
-////_________Band 4 _______Level 3
-////Gear [8]
-//GearsX[8] = typeWidth + SpaceHorizontal;
-//GearsY[8] = 4 * levelHeight - SpaceVertical;
-////Gear [9]
-//GearsX[9] = 2 * typeWidth - SpaceHorizontal;
-//GearsY[9] = GearsY[8];
-////_________Band 5 _______Level 3
-////Gear [10]
-//GearsX[10] = 2 * typeWidth + SpaceHorizontal;
-//GearsY[10] = 4 * levelHeight - SpaceVertical;
-////Gear [11]
-//GearsX[11] = width - SpaceHorizontal;
-//GearsY[11] = GearsY[10];
