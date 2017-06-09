@@ -8,7 +8,7 @@ Box::Box()
 	bottom=3.08 * BoxSize - 19;
 	PrimerMovimiento = true;
 	BandNumber = 0;
-	IsOrange = true;
+	IsOrange = 0;
 	type = 0;
 	Caida = false;
 	
@@ -68,7 +68,7 @@ void Box::DrawBox(CG::Gdi& gdi, float delta, bool esDerecha)
 	gdi.SelectNullPen();
 
 
-	if (IsOrange == true)
+	if (IsOrange == 0)
 	{
 		gdi.Select(OrangeBrush);
 	}
